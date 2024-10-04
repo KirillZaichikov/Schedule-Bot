@@ -1,30 +1,20 @@
+from Handlers import Reg
 import asyncio
 import logging
 import sys
-import sqlite3
 from config import TOKEN
-from aiogram import Bot, Dispatcher, types, F
-from aiogram.filters import Command, CommandObject
-from aiogram.utils.keyboard import ReplyKeyboardBuilder
-from aiogram.types import ContentType, Message, CallbackQuery, KeyboardButton, InlineKeyboardButton
-from aiogram.fsm.state import StatesGroup, State
-from aiogram.fsm.context import FSMContext
-from aiogram.methods import DeleteMessage
+from aiogram import Bot, Dispatcher
 
-
-# Config logging
+# Настройка логирования
 logging.basicConfig(level=logging.INFO)
 
-# BOt token and dispatcher
-BOT = Bot(token=TOKEN)
-dp = Dispatcher()
-
-
-
 async def main():
+    BOT = Bot(token=TOKEN)
+    dp = Dispatcher()
+    dp.include_router(Reg.router)
     await dp.start_polling(BOT)
 
 if __name__ == "__main__":
-    print("\n\nBot started!\n\n")
+    print("\n\nБот запущен!\n\n")
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     asyncio.run(main())
