@@ -17,7 +17,7 @@ class WorkWithFile:
         self.path_to_file = ''
 
     def find_excel_file(self):
-        path = pathlib.Path(r"C:\Users\user\Documents\ВУЗ\Schedule-Bot\scraper")
+        path = (pathlib.Path(__file__)).parents[0]
         for i in path.glob("*.xlsx"):
             self.path_to_file = i
             break
