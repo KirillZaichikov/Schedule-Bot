@@ -33,4 +33,3 @@ class WorkWithFile:
 x = WorkWithFile()
 x.find_excel_file()
 x1 = x.get_groups()
-print(x1)
