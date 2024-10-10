@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from Handlers.KB_group import *
+from Handlers.KB_group import groups, kb
 
 router = Router()
 
@@ -55,10 +55,10 @@ async def set_name_user(message: Message, state: FSMContext):
 
 @router.message(Reg_user.group)
 async def Reg(message: Message, state: FSMContext):
-    if message.text in KB_group.groups:
+    if message.text in groups:
         await state.update_data(group=message.text)
         data = await state.get_data()
-        await message.answer(f"Будем знакомы {data.get("name_user")}! \nТеперь вы можете запрашивать рассписание всего лишь одной кнопкой.")
+        await message.answer(f"Будем знакомы {data.get("name_user")}! \nТеперь вы можете запрашивать расписание всего лишь одной кнопкой.")
         print(data.get('student_or_teacher'), endl, data.get('name_user'), endl, data.get('group'))
         await state.clear()
     else:
