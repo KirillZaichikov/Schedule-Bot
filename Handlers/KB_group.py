@@ -15,4 +15,8 @@ def kb():
     for group in groups:
         builder.add(KeyboardButton(text=group))
     builder.adjust(4)
-    return builder.as_markup(resize_keyboard=True)
+    return builder.as_markup(resize_keyboard=True,
+                             one_time_keyboard=True,
+                             input_field_placeholder="Выберите группу",
+                             selective=True
+                             )

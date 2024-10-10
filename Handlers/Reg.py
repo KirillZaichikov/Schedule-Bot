@@ -4,10 +4,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-
-
-from Handlers import KB_group
-from Handlers.KB_group import *
+from Handlers.KB_group import groups, kb
 
 password=["123"]#Пароль от Преподовательского аккаунта!!
 
@@ -64,7 +61,6 @@ async def process_access_code(message: types.Message, state: FSMContext):
         await message.answer("Код не принят. Попробуйте еще раз.")
 
 
-
 @router.message(Reg_user.name_user)
 async def set_name_user(message: Message, state: FSMContext):
     await state.update_data(name_user=message.text)  # Сохраняем имя пользователя
@@ -81,13 +77,12 @@ async def set_name_user(message: Message, state: FSMContext):
         await state.clear()
 
 
-
 @router.message(Reg_user.group)
 async def Reg(message: Message, state: FSMContext):
-    if message.text in KB_group.groups:
+    if message.text in groups:
         await state.update_data(group=message.text)
         data = await state.get_data()
-        await message.answer(f"Будем знакомы {data.get("name_user")}! \nТеперь вы можете запрашивать рассписание всего лишь одной кнопкой.")
+        await message.answer(f"Будем знакомы {data.get("name_user")}! \nТеперь вы можете запрашивать расписание всего лишь одной кнопкой.")
         print(data.get('student_or_teacher'), endl, data.get('name_user'), endl, data.get('group'))
         await state.clear()
     else:
