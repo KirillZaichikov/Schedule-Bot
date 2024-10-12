@@ -3,7 +3,7 @@ from aiogram.types import KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from scraper.shedule import WorkWithFile, GroupOfFiles
 
-#files = GroupOfFiles()
+
 Init_class = WorkWithFile()
 Init_class.find_excel_file()
 groups = Init_class.get_groups()

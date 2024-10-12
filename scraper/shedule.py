@@ -30,7 +30,19 @@ class WorkWithFile:
             print("Excel-файл не найден!")
 
 
+class ReadExcel():
+    @staticmethod
+    def Read(path_to_file, group):
+        workbook = load_workbook(path_to_file)
+        sheet = workbook[group]
+        return sheet
+
+
 x = WorkWithFile()
 x.find_excel_file()
-x1 = x.get_groups()
-print(x1)
+x_1 = ReadExcel.Read(path_to_file=x.path_to_file, group="ИС 23")
+for i in x_1.iter_rows(min_row=16):
+    for cel in i:
+        if cel.value != None:
+            print(cel.value)
+    print("\n")
