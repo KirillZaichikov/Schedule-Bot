@@ -8,6 +8,7 @@ from aiogram import Router, F
 
 router = Router()
 
+# Вызов клавиатуры для просмотра рассписания
 @router.message(Command("Shedule"))
 async def show_schedule(message: Message):
     builder = ReplyKeyboardBuilder()
@@ -15,7 +16,7 @@ async def show_schedule(message: Message):
     await message.answer("Для просмотра най рассписание нажмите кнопку ниже",
                          reply_markup=builder.as_markup(resize_keyboard=True, one_time_keyboard=True, selective=True))
 
-
+# Ответ на кнопку "Просмотреть рассписание"
 @router.message(F.text == "Посмотреть рассписание")
 async def get_schedule(message: Message):
     await message.answer("Рассписание")

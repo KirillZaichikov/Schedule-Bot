@@ -1,3 +1,4 @@
+import sqlite3
 from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.types import Message, CallbackQuery
@@ -9,6 +10,7 @@ from Handlers.KB_group import groups, kb
 router = Router()
 
 endl = "\n"
+global user_id
 
 
 class Reg_user(StatesGroup):
@@ -19,6 +21,7 @@ class Reg_user(StatesGroup):
 
 @router.message(StateFilter(None), Command("start"))
 async def start(message: Message, state: FSMContext):
+    user_id = message.from_user.id
     builder = InlineKeyboardBuilder()
     builder.add(InlineKeyboardButton(
         text="Я студент",
@@ -59,7 +62,15 @@ async def Reg(message: Message, state: FSMContext):
         await state.update_data(group=message.text)
         data = await state.get_data()
         await message.answer(f"Будем знакомы {data.get("name_user")}! \nТеперь вы можете запрашивать расписание всего лишь одной кнопкой. Для продолжения используйте комманду /Shedule")
-        print(data.get('student_or_teacher'), endl, data.get('name_user'), endl, data.get('group'))
-        await state.clear()
+        data = await state.get_data()
+        con = sqlite3.connect("Test_db.db")
+        cur = con.cursor()
+        if data.get("student_or_teacher") == "Student":
+            user = cur.execute("SELECT * FROM student WHERE user_id=?", (message.from_user.id,)).fetchone()
+            if user is None:
+                cur.execute(""" INSERT INTO student (user_id, NameStudent, group_student) VALUES (?, ?, ?)""",
+                            (message.from_user.id, data.get("name_user"), data.get("group"),))
+                con.commit()
+                con.close()
     else:
         pass
