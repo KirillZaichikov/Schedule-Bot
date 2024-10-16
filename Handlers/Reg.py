@@ -17,6 +17,7 @@ class Reg_user(StatesGroup):
     student_or_teacher = State()  # Добавлено следующее состояние
     name_user = State()
     group = State()
+    access_code = State()
 
 
 @router.message(StateFilter(None), Command("start"))
@@ -46,7 +47,33 @@ async def Reg(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data == "Teacher")
 async def set_test_teacher(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer("тест пройден")
+    await callback.message.answer("Для продолжения введите ваш индивидуальный код")
+    await state.set_state(Reg_user.access_code)  # Устанавливаем состояние для ввода кода доступа
+
+@router.message(Reg_user.access_code)
+async def process_access_code(message: Message, state: FSMContext):
+    con = sqlite3.connect("Test_db.db")
+    cur = con.cursor()
+    data = await state.get_data()
+    password = cur.execute("""SELECT * FROM teacher WHERE id_user = ? """,
+                           (message.from_user.id,)).fetchone()
+    if password is None:
+        user_pass = cur.execute("""SELECT * FROM reg_teacher WHERE Verification_code = ?""",
+                                (data.get("access_code"),)).fetchall()
+        print(data.get("access_code"))
+        print(user_pass)
+        if user_pass is None:
+            await message.answer("Код не подтверждён!")
+        else:
+            name = cur.execute("""SELECT NameTeacher FROM reg_teacher WHERE Verification_code = ?""",
+                               (data.get("access_code"),)).fetchone()
+            await message.answer(f"Будем знакомы {name}")
+            cur.execute("""INSERT INTO teacher (id_user, NameTeacher) VALUES (?, ?)""",
+                        (message.from_user.id, name))
+            con.commit()
+            con.close()
+            await state.clear()
+
 
 
 @router.message(Reg_user.name_user)
@@ -74,3 +101,46 @@ async def Reg(message: Message, state: FSMContext):
                 con.close()
     else:
         pass
+
+
+class Admin(StatesGroup):
+    psw = State()
+    name_teacher = State()
+    key_teacher = State()
+
+
+@router.message(Command("Add_key"))
+async def Add_key(message: Message, state: FSMContext):
+    await state.set_state(Admin.psw)
+    await message.answer("Пожалуйста подтвердите права аминистратора!")
+
+@router.message(Admin.psw)
+async def add_key_2(message: Message, state: FSMContext):
+    await state.update_data(psw=message.text)
+    pasw = await state.get_data()
+    if pasw.get("psw") == "ad916m5385in":
+        await message.answer("Введите имя преподавателя")
+        await state.set_state(Admin.name_teacher)
+    else:
+        await message.answer("Ошибка подтверждения!")
+        await state.clear()
+        pass
+
+@router.message(Admin.name_teacher)
+async def name_teacher(message:Message, state: FSMContext):
+    await state.update_data(name_teacher=message.text)
+    await message.answer("Введите ключ преподавателя")
+    await state.set_state(Admin.key_teacher)
+
+@router.message(Admin.key_teacher)
+async def key(message: Message, state: FSMContext):
+    await state.update_data(key_teacher=message.text)
+    await message.answer("Регистрация ключа преподавателя заверешена")
+    data = await state.get_data()
+    con = sqlite3.connect("Test_db.db")
+    cur = con.cursor()
+    cur.execute("""INSERT INTO reg_teacher (NameTeacher, Verification_code) VALUES (?, ?)""",
+                            (data.get("name_teacher"), data.get("key_teacher"),))
+    con.commit()
+    con.close()
+    await state.clear()
