@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.filters import CommandStart, StateFilter
+from aiogram.filters import Command, StateFilter
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 from aiogram.fsm.state import StatesGroup, State
@@ -22,7 +22,7 @@ class Reg_user(StatesGroup):
     access_code = State()
 
 
-@router.message(StateFilter(None),CommandStart)
+@router.message(StateFilter(None),Command("start"))
 async def start(message: Message, state: FSMContext):
     builder = InlineKeyboardBuilder()
     builder.add(InlineKeyboardButton(
@@ -76,7 +76,7 @@ async def set_name_user(message: Message, state: FSMContext):
         await message.answer("И на последок я хотел бы узнать вашу группу.", reply_markup=kb())
         await state.set_state(Reg_user.group)
     else:
-        await message.answer("Отлично!\nВаша регистрация завершена.")
+        await message.answer("Отлично!! \nТеперь вы можете посмотреть расписание любой группы, при помощи команды /Couples")
         print(data.get("student_or_teacher"), "\n", data.get("name_user"))  # Используем \n для новой строки
         await state.clear()
 
