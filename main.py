@@ -1,4 +1,4 @@
-from Handlers import Reg
+from Handlers import Reg, Workshedteacher
 import asyncio
 import logging
 import sys
@@ -12,6 +12,7 @@ async def main():
     BOT = Bot(token=TOKEN)
     dp = Dispatcher()
     dp.include_router(Reg.router)
+    dp.include_router(Workshedteacher.router)
     await dp.start_polling(BOT)
 
 if __name__ == "__main__":
