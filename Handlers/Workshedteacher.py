@@ -46,12 +46,19 @@ schedule = load_schedule_from_excel(table_file)
 @router.message(Command("Couples"))
 async def teacher_button(message: Message, state: FSMContext):
     user_data = await state.get_data()  # Получаем данные о пользователе из состояния
+    if user_role.lower() != "teacher":  # Проверка роли пользователя
+        await message.answer("У вас нет доступа к этой команде.")
+        return
     await message.answer("Теперь вы можете посмотреть расписание любой группы!!", reply_markup=kb())
 
 
 @router.message(F.text.in_(groups))  # groups - это список
 async def button(message: Message, state: FSMContext):
     global table_file  # Указываем, что используем глобальную переменную
+    if user_role.lower() != "teacher":  # Проверка роли пользователя
+        await message.answer("У вас нет доступа к этому расписанию расписанию.")
+        return
+
     group_name = message.text  # Получаем название группы
 
     # Загружаем рабочую книгу
@@ -66,9 +73,9 @@ async def button(message: Message, state: FSMContext):
         return
 
     # Сбор данных для расписания
-    schedule_message = "Вот ваше расписание:\n\n"
+    schedule_message = "расписание группы:\n\n"
     unique_entries = set()  # Множество для хранения уникальных записей
-    rows = list(sheet.iter_rows(min_row=2, values_only=True))  # Получаем все строки в виде списка
+    rows = list(sheet.iter_rows(min_row=16, values_only=True))  # Получаем все строки в виде списка
 
     for i, row in enumerate(rows):
         if row[0] is None:  # Проверка на наличие данных в первой ячейке
@@ -113,11 +120,16 @@ async def button(message: Message, state: FSMContext):
         except Exception as e:
             print(f"Ошибка при удалении старого сообщения бота: {e}")
 
+    if user_role.lower() != "teacher":  # Проверка роли пользователя
+        await message.answer("У вас нет доступа к этой команде.")
+
     # Отправляем новое сообщение с расписанием
     new_message = await message.answer(schedule_message)
 
     # Сохраняем идентификатор нового сообщения в состоянии
     await state.update_data(last_message_id=new_message.message_id)
+
+
 
 
 
