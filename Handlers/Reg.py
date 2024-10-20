@@ -52,26 +52,29 @@ async def set_test_teacher(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Reg_user.access_code)
 async def process_access_code(message: Message, state: FSMContext):
+    await state.update_data(access_code=int(message.text))
     con = sqlite3.connect("Test_db.db")
     cur = con.cursor()
     data = await state.get_data()
-    password = cur.execute("""SELECT * FROM teacher WHERE id_user = ? """,
-                           (message.from_user.id,)).fetchone()
-    if password is None:
-        user_pass = cur.execute("""SELECT * FROM reg_teacher WHERE Verification_code = ?""",
-                                (data.get("access_code"),)).fetchall()
-        print(data.get("access_code"))
-        print(user_pass)
-        if user_pass is None:
-            await message.answer("Код не подтверждён!")
-        else:
+    user_pass = cur.execute("""SELECT Verification_code FROM reg_teacher WHERE Verification_code = ?""",
+                            (data.get("access_code"),)).fetchone()
+    print(data.get("access_code"))
+    print(user_pass[0])
+    if user_pass is None:
+        await message.answer("Код не подтверждён!")
+    else:
+        if user_pass[0] == data.get("access_code"):
             name = cur.execute("""SELECT NameTeacher FROM reg_teacher WHERE Verification_code = ?""",
                                (data.get("access_code"),)).fetchone()
-            await message.answer(f"Будем знакомы {name}")
+            print(name[0])
+            await message.answer(f"Будем знакомы {name[0]}")
             cur.execute("""INSERT INTO teacher (id_user, NameTeacher) VALUES (?, ?)""",
-                        (message.from_user.id, name))
+                    (message.from_user.id, name[0]))
             con.commit()
             con.close()
+            await state.clear()
+        else:
+            await message.answer("Код не подтверждён!")
             await state.clear()
 
 
@@ -99,6 +102,7 @@ async def Reg(message: Message, state: FSMContext):
                             (message.from_user.id, data.get("name_user"), data.get("group"),))
                 con.commit()
                 con.close()
+        await state.clear()
     else:
         pass
 

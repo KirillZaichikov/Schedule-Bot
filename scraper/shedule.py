@@ -30,12 +30,14 @@ class WorkWithFile:
             print("Excel-файл не найден!")
 
 
-class ReadExcel():
+class ReadExcel(): # класс для чтения информации из файла
     @staticmethod
-    def Read(path_to_file, group):
+    def Read(path_to_file, group): # чтение без корректировок
         workbook = load_workbook(path_to_file)
         sheet = workbook[group]
         return sheet
+    def return_shedule(self):
+        ...
 
 
 x = WorkWithFile()
@@ -45,4 +47,3 @@ for i in x_1.iter_rows(min_row=16):
     for cel in i:
         if cel.value != None:
             print(cel.value)
-    print("\n")

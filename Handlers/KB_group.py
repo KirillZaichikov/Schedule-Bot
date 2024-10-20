@@ -11,7 +11,7 @@ groups = Init_class.get_groups() # берём названия групп
 # Функция создания клавиатуры
 def kb():
     builder = ReplyKeyboardBuilder()
-    for group in groups:
+    for group in groups[0:-1:]:
         builder.add(KeyboardButton(text=group))
     builder.adjust(4)
     return builder.as_markup(resize_keyboard=True,
