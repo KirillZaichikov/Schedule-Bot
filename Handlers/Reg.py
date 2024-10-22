@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.filters import Command, CommandStart, StateFilter
+from aiogram.filters import Command, StateFilter
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 from aiogram.fsm.state import StatesGroup, State
@@ -19,7 +19,7 @@ class Reg_user(StatesGroup):
     access_code = State()
 
 
-@router.message(StateFilter(None),CommandStart)
+@router.message(StateFilter(None),Command("start"))
 async def start(message: Message, state: FSMContext):
     builder = InlineKeyboardBuilder()
     builder.add(InlineKeyboardButton(
