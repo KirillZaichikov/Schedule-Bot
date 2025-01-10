@@ -1,4 +1,4 @@
-from Handlers import Reg, Workshedteacher
+from Handlers import Reg, WorkWithStudent
 import asyncio
 import logging
 import sys
@@ -8,12 +8,14 @@ from aiogram import Bot, Dispatcher
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 
+
 async def main():
     BOT = Bot(token=TOKEN)
     dp = Dispatcher()
     dp.include_router(Reg.router)
-    dp.include_router(Workshedteacher.router)
+    dp.include_router(WorkWithStudent.router)
     await dp.start_polling(BOT)
+
 
 if __name__ == "__main__":
     print("\n\nБот запущен!\n\n")
