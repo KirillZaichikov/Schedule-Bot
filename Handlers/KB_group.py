@@ -19,3 +19,4 @@ def kb():
                              input_field_placeholder="Выберите группу",
                              selective=True
                              ) # Настройка клавиатуры
+

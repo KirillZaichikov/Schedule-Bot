@@ -7,6 +7,8 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from Handlers.KB_group import groups, kb
 
+password=["123"]#Пароль от Преподовательского аккаунта!!
+
 router = Router()
 
 endl = "\n"
@@ -81,9 +83,18 @@ async def process_access_code(message: Message, state: FSMContext):
 
 @router.message(Reg_user.name_user)
 async def set_name_user(message: Message, state: FSMContext):
-    await state.update_data(name_user=message.text)
-    await message.answer("И на последок я хотел бы узнать вашу группу.", reply_markup=kb())
-    await state.set_state(Reg_user.group)
+    await state.update_data(name_user=message.text)  # Сохраняем имя пользователя
+    data = await state.get_data()  # Получаем данные из состояния
+    student_or_teacher = data.get("student_or_teacher")  # Получаем информацию о роли пользователя
+
+
+    if student_or_teacher == "Student":
+        await message.answer("И на последок я хотел бы узнать вашу группу.", reply_markup=kb())
+        await state.set_state(Reg_user.group)
+    else:
+        await message.answer("Отлично!! \nТеперь вы можете посмотреть расписание любой группы, при помощи команды /Couples")
+        print(data.get("student_or_teacher"), "\n", data.get("name_user"))  # Используем \n для новой строки
+        await state.clear()
 
 
 @router.message(Reg_user.group)
