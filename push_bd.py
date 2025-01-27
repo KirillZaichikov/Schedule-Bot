@@ -2,10 +2,7 @@ from scraper.shedule import *
 
 
 def main():
-    # Создаем экземпляр класса GroupOfFiles для получения списка файлов
     group_of_files = GroupOfFiles()
-
-    # Получаем путь к Excel-файлу
     file_handler = WorkWithFile()
     file_handler.find_excel_file()
 
